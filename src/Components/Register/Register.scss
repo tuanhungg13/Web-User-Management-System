@@ -1,0 +1,54 @@
+.red {
+    border: 1px solid red;
+}
+
+.green {
+    border: 1px solid green;
+}
+
+.register-container {
+    // .row {
+
+    //     margin: 0 150px 0 150px;
+    // }
+
+    .content-right {
+        border-radius: 10px;
+        border: 1px solid grey;
+        padding: 0 3rem 0 3rem;
+
+        .forgot-password {
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        .form-group {
+            margin-top: -6px;
+
+            .invalid-feedback {
+                margin-top: -2px;
+            }
+        }
+    }
+
+    .content-left {
+        .brand {
+            text-transform: uppercase;
+            font-size: 30px;
+            color: #1877f2;
+            font-weight: 600;
+        }
+
+        .detail {
+            font-size: 20px;
+        }
+
+        margin-top: 50px;
+        padding-left: 100px;
+        justify-content: center;
+    }
+
+}

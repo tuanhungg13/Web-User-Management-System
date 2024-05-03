@@ -1,0 +1,88 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Users</title>
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="user-infor-container">
+                <form method="POST" action="/users/create-user">
+
+                    <div class="mb-3 mt-3 col-6">
+                        <label for="email">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" require
+                            placeholder="Enter email">
+
+                    </div>
+                    <div></div>
+                    <div class="mb-3 col-6">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                            require>
+                    </div>
+                    <div></div>
+                    <div class="mb-3 col-6">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Username"
+                            require>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="mt-3">
+                <h3>Table user:</h3>
+            </div>
+            <table class="mt-3 table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% listUsers.forEach(function(user){%>
+                        <tr>
+                            <th scope="row">
+                                <%= user.id%>
+                            </th>
+                            <td>
+                                <%= user.email%>
+                            </td>
+                            <td>
+                                <%=user.username%>
+                            </td>
+                            <td>
+                                <!-- <form action="/update-user/<%= user.id %>" method="GET" style="display: inline">
+                                    <button class="btn btn-warning">Edit</button>
+                                </form> -->
+                                <a class="btn btn-warning" href="/update-user/<%= user.id %>">
+                                    Edit
+                                </a>
+                                <form action="/delete-user/<%= user.id %>" method="POST" style="display: inline">
+                                    <button class="btn btn-danger">Delete</button>
+                                </form>
+
+                            </td>
+                        </tr>
+                        <%})%>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

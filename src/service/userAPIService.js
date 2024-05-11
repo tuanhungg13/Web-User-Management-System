@@ -1,6 +1,6 @@
 
 import db from '../models/index';
-
+import { checkEmailExist, checkPhoneNumberExist, handleHashPassword } from "../service/registerLoginUserService";
 
 const GetAllUser = async () => {
     try {
@@ -40,8 +40,8 @@ const GetUserWithPagination = async (page, limit) => {
         const { count, rows } = await db.User.findAndCountAll({
             offset: offset,
             limit: limit,
-            attributes: ["id", "email", "phone", "fullName", "gender"],
-            include: { model: db.Group, attributes: ["nameGR", "description"] }
+            attributes: ["id", "email", "phone", "fullName", "gender", "address"],
+            include: { model: db.Group, attributes: ["id", "nameGR", "description"] }
         })
         let totalPages = Math.ceil(count / limit);
         const data = {
@@ -67,11 +67,35 @@ const GetUserWithPagination = async (page, limit) => {
 
 const CreateNewUser = async (data) => {
     try {
-        // await db.User.create({
-        //     email: data.email,
-        //     password: data.hashPassword,
-        //     username: data.username
-        // });
+        if (await checkEmailExist(data.email)) {
+            return ({
+                EM: "Email already exist !",
+                EC: 1,
+                DT: "emailError"
+            })
+        }
+        else if (await checkPhoneNumberExist(data.phone)) {
+            return ({
+                EM: "Phone number already exist !",
+                EC: 1,
+                DT: "phoneNumberError"
+            })
+        }
+        let hashPassword = handleHashPassword(data.password);
+        await db.User.create({
+            email: data.email,
+            phone: data.phone,
+            password: hashPassword,
+            fullName: data.fullName,
+            address: data.address,
+            gender: data.gender,
+            groupId: data.groupId
+        });
+        return ({
+            EM: "A user is created successfully",
+            EC: 0,
+            DT: []
+        })
     } catch (error) {
         console.log(">>>> Check error from function CreateNewUser of usesAPIController.js:", error)
         return ({
@@ -81,15 +105,28 @@ const CreateNewUser = async (data) => {
         })
     }
 }
-const UpdateUser = async () => {
+const UpdateUser = async (data) => {
     try {
         await db.User.update({
-
+            fullName: data.fullName,
+            address: data.address,
+            gender: data.gender,
+            groupId: data.groupId
+        },
+            {
+                where: {
+                    id: data.id
+                }
+            })
+        return ({
+            EM: "A user is updated successfully",
+            EC: 0,
+            DT: []
         })
     } catch (error) {
-        console.log(">>>> Check error from usesAPIController.js:", error)
+        console.log(">>>> Check error from function UpdateUser of usesAPIController.js:", error)
         return ({
-            EM: "Error from usesAPIController.js",
+            EM: "Error from function UpdateUser of usesAPIController.js",
             EC: "-1",
             DT: ""
         })

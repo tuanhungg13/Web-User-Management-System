@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import { FetchGroup } from "../service/userService";
 import { useEffect, useState } from 'react';
 import { AiFillFileAdd } from "react-icons/ai";
-import { CreateNewUser } from '../service/userService';
+import { CreateNewUser, UpdateUser } from '../service/userService';
 import { toast } from 'react-toastify';
 
 const ModalCreateUser = (props) => {
@@ -38,7 +38,8 @@ const ModalCreateUser = (props) => {
         if (props.action === "UPDATE") {
             setEmail(props.dataModalEditUser.email || "");
             setPhone(props.dataModalEditUser.phone || "");
-            setFullName(props.dataModalEditUser.fullName || "");
+            setFullName(props.dataModalEditUser.fullName || "")
+            setPassword(props.dataModalEditUser.password);
             setAddress(props.dataModalEditUser.address || "");
             setGender(props.dataModalEditUser.gender || "");
             setGroupId(props.dataModalEditUser.Group?.id || "");
@@ -83,7 +84,7 @@ const ModalCreateUser = (props) => {
             isValid = false;
         }
 
-        if (!password) {
+        if (!password && props.action === "CREATE") {
             newErrors.password = "Password is required";
             isValid = false;
         }
@@ -92,6 +93,12 @@ const ModalCreateUser = (props) => {
         }
         if (!address) {
             newErrors.address = "Address is require";
+        }
+        if (!groupId) {
+            newErrors.groupId = "Group is require";
+        }
+        if (!gender) {
+            newErrors.gender = "Gender is require";
         }
         setErrors(newErrors);
         return isValid;
@@ -113,26 +120,39 @@ const ModalCreateUser = (props) => {
         setErrors(newErrors);
     }
 
-    const handleConfirmCreateUser = async () => {
+    const handleConfirmModalUser = async () => {
         let check = isValidInput();
         const newErrorsBE = {};
         if (check === true) {
-            let response = await CreateNewUser(email, phone, fullName, password, gender, address, groupId);
-            console.log(response);
-            if (+response.data.EC === 0) {
-                toast.success(response.data.EM);
-                await props.fetchUsers();
-                handleCloseModal();
+            if (props.action === "CREATE") {
+                console.log("check create")
+                let response = await CreateNewUser(email, phone, fullName, password, gender, address, groupId);
+                console.log(response);
+                if (+response.data.EC === 0) {
+                    toast.success(response.data.EM);
+                    await props.fetchUsers();
+                    handleCloseModal();
+                }
+                else {
+                    console.log(response.data.EM);
+                    console.log(response.data.DT, response.data.DT.length)
+                    if (response.data.DT === "emailError") {
+                        newErrorsBE.email = response.data.EM;
+                    }
+                    else if (response.data.DT === "phoneError") {
+                        newErrorsBE.phone = response.data.EM;
+
+                    }
+                }
             }
             else {
-                console.log(response.data.EM);
-                console.log(response.data.DT, response.data.DT.length)
-                if (response.data.DT === "emailError") {
-                    newErrorsBE.email = response.data.EM;
-                }
-                else if (response.data.DT === "phoneError") {
-                    newErrorsBE.phone = response.data.EM;
-
+                console.log("check update hehe:")
+                let response = await UpdateUser(props.dataModalEditUser.id, email, phone, fullName, gender, address, groupId);
+                console.log(response);
+                if (+response.data.EC === 0) {
+                    toast.success(response.data.EM);
+                    await props.fetchUsers();
+                    handleCloseModal();
                 }
             }
         }
@@ -155,7 +175,7 @@ const ModalCreateUser = (props) => {
                                 ) : (
                                     <img src={iconAddPicture} alt="" />
                                 )}
-                                <label for="file-upload" className="custom-file-upload ms-3 mt-2">
+                                <label htmlFor="file-upload" className="custom-file-upload ms-3 mt-2">
                                     <AiFillFileAdd style={{ fontSize: '45px' }} />Choose file
                                 </label>
                                 <input className='d-none' id="file-upload" type='file' onChange={(event) => handleImg(event)} />
@@ -184,7 +204,7 @@ const ModalCreateUser = (props) => {
                                 <label>Full Name</label>
                                 <input className={`form-control ${errors.fullName ? "is-invalid" : ""}`} type='text' value={fullName}
                                     onChange={(event) => { setFullName(event.target.value) }} />
-                                {errors.email && <div className='invalid-feedback'>{errors.fullName}</div>}
+                                {errors.fullName && <div className='invalid-feedback'>{errors.fullName}</div>}
                             </div>
                             <div className='col-12 col-sm-6 form-group'>
                                 {props.action === "CREATE" &&
@@ -192,7 +212,7 @@ const ModalCreateUser = (props) => {
                                         <label>Password</label>
                                         <input className={`form-control ${errors.password ? "is-invalid" : ""}`} type='password' value={password}
                                             onChange={(event) => { setPassword(event.target.value) }} />
-                                        {errors.email && <div className='invalid-feedback'>{errors.password}</div>}
+                                        {errors.password && <div className='invalid-feedback'>{errors.password}</div>}
                                     </>
                                 }
                             </div>
@@ -200,21 +220,22 @@ const ModalCreateUser = (props) => {
                                 <label>Address</label>
                                 <input className={`form-control ${errors.address ? "is-invalid" : ""}`} type="text" value={address}
                                     onChange={(event) => { setAddress(event.target.value) }} />
-                                {errors.email && <div className='invalid-feedback'>{errors.address}</div>}
+                                {errors.address && <div className='invalid-feedback'>{errors.address}</div>}
                             </div>
                             <div className='col-12 col-sm-6 form-group'>
                                 <label>Gender</label>
-                                <Form.Select aria-label="Default select example" value={gender}
+                                <Form.Select className={`form-control ${errors.gender ? "is-invalid" : ""}`} value={gender}
                                     onChange={(event) => { setGender(event.target.value) }}>
                                     {!gender && <option>Select Gender</option>}
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </Form.Select>
+                                {errors.gender && <div className='invalid-feedback'>{errors.gender}</div>}
                             </div>
                             <div className='col-12 col-sm-6 form-group'>
                                 <label>Group</label>
-                                <Form.Select aria-label="Default select example" value={groupId}
+                                <Form.Select className={`form-control ${errors.groupId ? "is-invalid" : ""}`} value={groupId}
                                     onChange={(event) => { setGroupId(event.target.value) }}>
                                     {!groupId && <option>Select Group</option>}
                                     {UserGroups.map((item, index) => {
@@ -224,8 +245,8 @@ const ModalCreateUser = (props) => {
                                             </option>
                                         )
                                     })}
-
                                 </Form.Select>
+                                {errors.groupId && <div className='invalid-feedback'>{errors.groupId}</div>}
                             </div>
                         </div>
                     </div>
@@ -234,8 +255,8 @@ const ModalCreateUser = (props) => {
                     <Button variant="secondary" onClick={handleCloseModal}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={() => { handleConfirmCreateUser() }}>
-                        Save
+                    <Button variant="primary" onClick={() => { handleConfirmModalUser() }}>
+                        {props.action === "CREATE" ? "Save" : "Update"}
                     </Button>
                 </Modal.Footer>
             </Modal >

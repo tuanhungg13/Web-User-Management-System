@@ -12,6 +12,7 @@ function App() {
   const [account, setAccount] = useState({});
 
   useEffect(() => {
+
     let session = sessionStorage.getItem("account");
     if (session) {
       setAccount(JSON.parse(session));

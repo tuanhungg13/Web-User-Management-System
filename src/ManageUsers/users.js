@@ -4,6 +4,10 @@ import ReactPaginate from 'react-paginate';
 import ModalDelete from "./modalDelete";
 import { toast } from "react-toastify";
 import ModalCreateUser from "./modalCreate_EditUser";
+import { GrRefresh } from "react-icons/gr";
+import { IoPersonAdd } from "react-icons/io5";
+import { MdDelete } from "react-icons/md";
+import { FaUserEdit } from "react-icons/fa";
 
 const Users = (props) => {
 
@@ -74,10 +78,21 @@ const Users = (props) => {
                         <div className="title">
                             <h3 className="mt-3">List Users</h3>
                         </div>
-                        <div className="actions my-3">
-                            <button className="btn btn-primary">Refresh</button>
+                        <div className="actions my-3 d-flex justify-content-between" >
+                            <button className="btn btn-primary">
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <GrRefresh style={{ fontSize: '25px' }} />
+                                    <span style={{ marginLeft: '5px' }}>Refesh</span>
+                                </div>
+                            </button>
+
                             <button className="btn btn-success"
-                                onClick={() => { handleCreateUser() }}>Add New User</button>
+                                onClick={() => { handleCreateUser() }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <IoPersonAdd style={{ fontSize: '25px' }} />
+                                    <span style={{ marginLeft: '5px' }}>Add New User</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
 
@@ -100,7 +115,7 @@ const Users = (props) => {
                                 {listUsers.map((item, index) => {
                                     return (
                                         <tr key={`row-${index}`}>
-                                            <td>{index + 1}</td>
+                                            <td>{index + 1 + (currentPage - 1) * 10}</td>
                                             <td>{item.id}</td>
                                             <td>{item.email}</td>
                                             <td>{item.phone}</td>
@@ -110,9 +125,19 @@ const Users = (props) => {
                                             <td>{item.Group ? item.Group.nameGR : ""}</td>
                                             <td>
                                                 <button className="btn btn-warning me-3"
-                                                    onClick={() => { handleEditUser(item) }}>Edit</button>
+                                                    onClick={() => { handleEditUser(item) }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <FaUserEdit style={{ fontSize: '20px' }} />
+                                                        <span style={{ marginLeft: '5px' }}>Edit</span>
+                                                    </div>
+                                                </button>
                                                 <button className="btn btn-danger"
-                                                    onClick={() => { handleDeleteUser(item) }}>Delete</button>
+                                                    onClick={() => { handleDeleteUser(item) }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <MdDelete style={{ fontSize: '20px' }} />
+                                                        <span style={{ marginLeft: '5px' }}>Delete</span>
+                                                    </div>
+                                                </button>
                                             </td>
                                         </tr>
                                     )

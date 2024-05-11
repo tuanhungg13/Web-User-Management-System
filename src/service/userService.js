@@ -28,5 +28,10 @@ const CreateNewUser = (email, phone, fullName, password, gender, address, groupI
         email, phone, fullName, password, gender, address, groupId
     });
 }
+const UpdateUser = (id, email, phone, fullName, gender, address, groupId) => {
+    return axios.put('http://localhost:8080/api/v1/users/update', {
+        id, email, phone, fullName, gender, address, groupId
+    });
+}
 
-export { RegisterNewUser, LoginUser, FetchAllUser, DeleteUser, FetchGroup, CreateNewUser };
+export { RegisterNewUser, LoginUser, FetchAllUser, DeleteUser, FetchGroup, CreateNewUser, UpdateUser };

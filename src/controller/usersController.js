@@ -1,5 +1,8 @@
 import userAPIService from "../service/userAPIService";
 
+
+let globalFile = null;
+
 const ShowUser = async (req, res) => {
     try {
         //let data = await userAPIService.GetAllUser();
@@ -24,6 +27,17 @@ const ShowUser = async (req, res) => {
     }
 }
 
+
+const UploadImg = (req, res) => {
+    console.log("check file img:", req.file)
+    globalFile = req.file;
+    return res.status(200).json({
+        EM: "get image success!",
+        EC: "0",
+        DT: []
+    })
+}
+
 const CreateFunc = async (req, res) => {
     try {
         if (!req.body.email || !req.body.phone || !req.body.fullName || !req.body.gender || !req.body.address || !req.body.groupId || !req.body.password) {
@@ -33,8 +47,10 @@ const CreateFunc = async (req, res) => {
                 DT: []
             })
         }
-        console.log(req.body)
-        let response = await userAPIService.CreateNewUser(req.body);
+        console.log("check req create user", req.body)
+        let image = globalFile;
+        console.log("check image", image)
+        let response = await userAPIService.CreateNewUser(image, req.body);
         return res.status(200).json({
             EM: response.EM,
             EC: response.EC,
@@ -93,5 +109,5 @@ const DeleteFunc = async (req, res) => {
 }
 
 module.exports = {
-    ShowUser, CreateFunc, UpdateFunc, DeleteFunc
+    ShowUser, CreateFunc, UpdateFunc, DeleteFunc, UploadImg
 }

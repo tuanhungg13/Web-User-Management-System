@@ -27,6 +27,7 @@ app.use(function (req, res, next) {
     next();
 });
 
+
 //config view engine
 configViewEngine(app);
 app.use(bodyParser.json());

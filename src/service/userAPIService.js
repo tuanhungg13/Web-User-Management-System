@@ -1,6 +1,7 @@
 
 import db from '../models/index';
 import { checkEmailExist, checkPhoneNumberExist, handleHashPassword } from "../service/registerLoginUserService";
+import { saveImageFile } from "../config/image";
 
 const GetAllUser = async () => {
     try {
@@ -40,7 +41,7 @@ const GetUserWithPagination = async (page, limit) => {
         const { count, rows } = await db.User.findAndCountAll({
             offset: offset,
             limit: limit,
-            attributes: ["id", "email", "phone", "fullName", "gender", "address"],
+            attributes: ["image", "id", "email", "phone", "fullName", "gender", "address"],
             include: { model: db.Group, attributes: ["id", "nameGR", "description"] }
         })
         let totalPages = Math.ceil(count / limit);
@@ -65,31 +66,32 @@ const GetUserWithPagination = async (page, limit) => {
     }
 }
 
-const CreateNewUser = async (data) => {
+const CreateNewUser = async (dataImg, dataInfor) => {
     try {
-        if (await checkEmailExist(data.email)) {
+        if (await checkEmailExist(dataInfor.email)) {
             return ({
                 EM: "Email already exist !",
                 EC: 1,
                 DT: "emailError"
             })
         }
-        else if (await checkPhoneNumberExist(data.phone)) {
+        else if (await checkPhoneNumberExist(dataInfor.phone)) {
             return ({
                 EM: "Phone number already exist !",
                 EC: 1,
                 DT: "phoneNumberError"
             })
         }
-        let hashPassword = handleHashPassword(data.password);
+        let hashPassword = handleHashPassword(dataInfor.password);
         await db.User.create({
-            email: data.email,
-            phone: data.phone,
+            image: dataImg.path,
+            email: dataInfor.email,
+            phone: dataInfor.phone,
             password: hashPassword,
-            fullName: data.fullName,
-            address: data.address,
-            gender: data.gender,
-            groupId: data.groupId
+            fullName: dataInfor.fullName,
+            address: dataInfor.address,
+            gender: dataInfor.gender,
+            groupId: dataInfor.groupId
         });
         return ({
             EM: "A user is created successfully",
@@ -107,7 +109,9 @@ const CreateNewUser = async (data) => {
 }
 const UpdateUser = async (data) => {
     try {
+        const avatarPath = await saveImageFile(file);
         await db.User.update({
+            image: avatarPath,
             fullName: data.fullName,
             address: data.address,
             gender: data.gender,

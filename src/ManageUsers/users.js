@@ -8,6 +8,7 @@ import { GrRefresh } from "react-icons/gr";
 import { IoPersonAdd } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 const Users = (props) => {
 
@@ -19,7 +20,7 @@ const Users = (props) => {
     const [dataModal, setDataModal] = useState({})
     const [actionModal, setActionModal] = useState("");
     const [dataModalEditUser, setDataModalEditUser] = useState({})
-
+    const navigate = useNavigate();
     useEffect(() => {
         fetchUsers();
     }, [currentPage])
@@ -39,6 +40,7 @@ const Users = (props) => {
     }
 
     const handleDeleteUser = (user) => {
+        navigate('/users/delete');
         setDataModal(user);
         setIsShowModalDelete(true);
     }
@@ -61,11 +63,13 @@ const Users = (props) => {
         }
     }
     const handleCreateUser = () => {
+        navigate('/users/create');
         setActionModal("CREATE");
         setIsShowModal(true);
     }
 
     const handleEditUser = (user) => {
+        navigate('/users/update');
         setDataModalEditUser(user);
         setActionModal("UPDATE");
         setIsShowModal(true);
@@ -76,7 +80,6 @@ const Users = (props) => {
                 <div className="mangage-users-container">
                     <div className="user-header">
                         <div className="title">
-                            <h3 className="mt-3">List Users</h3>
                         </div>
                         <div className="actions my-3 d-flex justify-content-between" >
                             <button className="btn btn-primary">

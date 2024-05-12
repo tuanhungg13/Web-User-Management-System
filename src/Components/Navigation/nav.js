@@ -1,5 +1,5 @@
 import './nav.scss';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 const Nav = () => {
     const [isShow, setIsShow] = useState(false);

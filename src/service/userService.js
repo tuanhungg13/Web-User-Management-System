@@ -23,15 +23,25 @@ const DeleteUser = (user) => {
 const FetchGroup = () => {
     return axios.get(`http://localhost:8080/api/v1/group/read`);
 }
+
+const UploadImage = (image) => {
+    return axios.post('http://localhost:8080/api/v1/users/upload/img', image, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
+
 const CreateNewUser = (email, phone, fullName, password, gender, address, groupId) => {
     return axios.post('http://localhost:8080/api/v1/users/create', {
         email, phone, fullName, password, gender, address, groupId
     });
 }
+
 const UpdateUser = (id, email, phone, fullName, gender, address, groupId) => {
     return axios.put('http://localhost:8080/api/v1/users/update', {
         id, email, phone, fullName, gender, address, groupId
     });
 }
 
-export { RegisterNewUser, LoginUser, FetchAllUser, DeleteUser, FetchGroup, CreateNewUser, UpdateUser };
+export { RegisterNewUser, LoginUser, FetchAllUser, DeleteUser, FetchGroup, UploadImage, CreateNewUser, UpdateUser };

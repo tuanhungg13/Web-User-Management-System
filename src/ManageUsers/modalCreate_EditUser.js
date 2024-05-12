@@ -6,8 +6,9 @@ import Form from 'react-bootstrap/Form';
 import { FetchGroup } from "../service/userService";
 import { useEffect, useState } from 'react';
 import { AiFillFileAdd } from "react-icons/ai";
-import { CreateNewUser, UpdateUser } from '../service/userService';
+import { UploadImage, CreateNewUser, UpdateUser } from '../service/userService';
 import { toast } from 'react-toastify';
+
 
 const ModalCreateUser = (props) => {
     const [UserGroups, setUserGroups] = useState([]);
@@ -18,7 +19,8 @@ const ModalCreateUser = (props) => {
     const [address, setAddress] = useState("");
     const [gender, setGender] = useState("");
     const [groupId, setGroupId] = useState("")
-    const [uploadImage, setUploadImage] = useState(null);
+    const [displayImg, setDisplayImg] = useState(null)
+    const [image, setImage] = useState();
     const [errors, setErrors] = useState({
         email: "",
         phone: "",
@@ -34,8 +36,9 @@ const ModalCreateUser = (props) => {
         getGroups();
     }, [])
     useEffect(() => {
-        console.log("check props", props.dataModalEditUser)
+        console.log("check props dataModal", props.dataModalEditUser)
         if (props.action === "UPDATE") {
+            //setDisplayImg(`file://${props.dataModalEditUser.image}` || "")
             setEmail(props.dataModalEditUser.email || "");
             setPhone(props.dataModalEditUser.phone || "");
             setFullName(props.dataModalEditUser.fullName || "")
@@ -54,10 +57,15 @@ const ModalCreateUser = (props) => {
     }
     const handleImg = (event) => {
         const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append("image", file);
+        console.log("check formData", formData)
+        setImage(formData);
         const fileReader = new FileReader();
+        console.log("check image", image);
         fileReader.onloadend = () => {
             // Khi tệp đã được đọc thành công, đặt state mới với URL của ảnh
-            setUploadImage(fileReader.result);
+            setDisplayImg(fileReader.result);
         };
         if (file) {
             fileReader.readAsDataURL(file);
@@ -110,6 +118,7 @@ const ModalCreateUser = (props) => {
         for (let i = 0; i < errors.length; i++) {
             newErrors.errors[i] = "";
         }
+        setDisplayImg("")
         setAddress("");
         setEmail("");
         setPhone("");
@@ -125,7 +134,7 @@ const ModalCreateUser = (props) => {
         const newErrorsBE = {};
         if (check === true) {
             if (props.action === "CREATE") {
-                console.log("check create")
+                let resImg = await UploadImage(image);
                 let response = await CreateNewUser(email, phone, fullName, password, gender, address, groupId);
                 console.log(response);
                 if (+response.data.EC === 0) {
@@ -170,8 +179,8 @@ const ModalCreateUser = (props) => {
                     <div className='container-create-user row'>
                         <div className='content-left col-12 col-sm-3'>
                             <div className='container-img col-12 d-block'>
-                                {uploadImage ? (
-                                    <img src={uploadImage} alt="" />
+                                {displayImg ? (
+                                    <img src={displayImg} alt="" />
                                 ) : (
                                     <img src={iconAddPicture} alt="" />
                                 )}
